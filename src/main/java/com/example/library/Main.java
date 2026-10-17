@@ -7,6 +7,7 @@ import com.example.library.service.BookService;
 
 public class Main {
     public static void main(String[] args) {
+        //kitabxana sistemi
 
         BookRepository bookRepository = new InMemoryBookRepository();
         BookService service = new BookService(bookRepository);
