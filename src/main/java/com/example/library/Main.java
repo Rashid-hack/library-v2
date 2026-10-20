@@ -4,60 +4,119 @@ import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
 import com.example.library.repository.InMemoryBookRepository;
 import com.example.library.service.BookService;
+import java.util.List;
+import java.util.Scanner;
 
 public class Main {
+
+    private static final Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        //kitabxana sistemi
 
         BookRepository bookRepository = new InMemoryBookRepository();
         BookService service = new BookService(bookRepository);
 
-        Book book1 = service.addBook("Risali Nur", "Said Nursi", 25.5);
-        Book book2 = service.addBook("Sozler Kosku", "Said Nursi", 17.8);
-        System.out.println(book1);
-        System.out.println(book2);
+        boolean running = true;
 
-        Book book3 = service.addBook("  ali ve nino  ", "  camal qasim  ", 7.5);
-        System.out.println(book3);
+        while (running){
+            printMenu();
+            String choice = scanner.nextLine().trim();
 
-        try {
-            service.addBook("", "Said Nursi", 12.7);
-            System.out.println("Bu cap olunmayacaq");
-        } catch (IllegalArgumentException e){
-            System.out.println("Xeta: " + e.getMessage());
+            switch (choice){
+                case "1" -> showAllBooks(service);
+                case "2" -> addBook(service);
+                case "3" -> updatePrice(service);
+                case "4" -> deleteBook(service);
+                case "0" -> {
+                    System.out.println("Kitabxanadan cixilir sagolun.....");
+                    running = false;
+                }
+                default -> System.out.println("Yanlis secim, zehmet olmasa 0-dan 4-e qeder bir reqem secin");
+            }
         }
 
-        try {
-            service.updatePrice(1, -25.3);
-            System.out.println("Cixmamalidir yazi");
-        } catch (IllegalArgumentException e){
-            System.out.println("Xeta: " + e.getMessage());
+    }
+
+    private static void printMenu(){
+        System.out.println();
+        System.out.println("======= KITABXANA MENYUSU =======");
+        System.out.println("1. Kitablari goster");
+        System.out.println("2. Kitab elave et");
+        System.out.println("3. Kitabin qiymetini yenile");
+        System.out.println("4. Kitabi sil");
+        System.out.println("0. Cixis");
+        System.out.print("Secim: ");
+    }
+
+    private static void showAllBooks(BookService service){
+        List<Book> books = service.showAllBooks();
+        if (books.isEmpty()){
+            System.out.println("Ref bosdur!");
+            return;
         }
-
-        try {
-            service.updatePrice(99, 25.45);
-            System.out.println(service.updatePrice(99, 25.45));
-        } catch (IllegalArgumentException e){
-            System.out.println("Xeta: " + e.getMessage());
-        }
-
-        try {
-            service.addBook("Sair", "Vahid", -12.51);
-            System.out.println("Cixmamalidir");
-        } catch (IllegalArgumentException e){
-            System.out.println("Xeta: " + e.getMessage());
-        }
-
-        System.out.println(service.updatePrice(2, 5.7));
-
-        System.out.println(service.deleteById(1));
-        System.out.println(service.deleteById(1));
-
-        for (Book book : service.showAllBooks()){
+        for (Book book : books){
             System.out.println(book);
         }
+    }
 
-        System.out.println("Say: " + service.showAllBooks().size());
+    private static void addBook(BookService service){
+        System.out.print("Kitabin adini daxil edin: ");
+        String title = scanner.nextLine();
+        System.out.print("Muellifin adini daxil edin: ");
+        String author = scanner.nextLine();
+        double price = readDouble("Qiymeti: ");
+        try {
+            Book saved = service.addBook(title, author, price);
+            System.out.println("Elave olundu: " + saved);
+        } catch (IllegalArgumentException e){
+            System.out.println("Xeta: " + e.getMessage());
+        }
+    }
+
+    private static double readDouble(String message){
+        while (true){
+            System.out.print(message);
+            String text = scanner.nextLine().trim();
+            try {
+                return Double.parseDouble(text);
+            } catch (IllegalArgumentException e){
+                System.out.println("Xeta: yanliz reqemlerden istifade edin");
+            }
+        }
+    }
+
+    private static void updatePrice(BookService service){
+        long id = readLong("Qiymetini deyismek istediyiniz kitabin Id nomresini daxil edin: ");
+        double price = readDouble("Yeni qiymet: ");
+        try {
+            service.updatePrice(id, price);
+            System.out.println("Qiymet yenilendi: " + price);
+        } catch (IllegalArgumentException e){
+            System.out.println("Xeta: " + e);
+        }
+
+    }
+
+    private static long readLong(String message){
+        while (true){
+            System.out.print(message);
+            String text = scanner.nextLine().trim();
+            try {
+                return Long.parseLong(text);
+            } catch (IllegalArgumentException e){
+                System.out.println("Xeta: yanliz reqemlerden istifade edin");
+            }
+        }
+    }
+
+    private static void deleteBook(BookService service){
+        long id = readLong("Silmek istediyiniz kitabin Id nomresini daxil edin: ");
+        try {
+            service.deleteById(id);
+            System.out.println("Secdiyiniz kitab silindi");
+        } catch (IllegalArgumentException e){
+            System.out.println("Xeta: " + e.getMessage());
+        }
 
     }
 }
