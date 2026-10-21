@@ -89,10 +89,13 @@ public class Main {
         long id = readLong("Qiymetini deyismek istediyiniz kitabin Id nomresini daxil edin: ");
         double price = readDouble("Yeni qiymet: ");
         try {
-            service.updatePrice(id, price);
-            System.out.println("Qiymet yenilendi: " + price);
+            if (service.updatePrice(id, price)){
+                System.out.println("Qiymet yenilendi: " + price);
+            } else {
+                System.out.println("Kitab tapilmadi!");
+            }
         } catch (IllegalArgumentException e){
-            System.out.println("Xeta: " + e);
+            System.out.println("Xeta: " + e.getMessage());
         }
 
     }
@@ -112,8 +115,11 @@ public class Main {
     private static void deleteBook(BookService service){
         long id = readLong("Silmek istediyiniz kitabin Id nomresini daxil edin: ");
         try {
-            service.deleteById(id);
-            System.out.println("Secdiyiniz kitab silindi");
+            if (service.deleteById(id)){
+                System.out.println("Secdiyiniz kitab silindi");
+            } else {
+                System.out.println("Kitab tapilmadi!");
+            }
         } catch (IllegalArgumentException e){
             System.out.println("Xeta: " + e.getMessage());
         }
