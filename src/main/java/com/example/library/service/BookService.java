@@ -22,7 +22,7 @@ public class BookService {
         checkName(title, author);
         checkPrice(price);
 
-        Book book = new Book(bookRepo.giveNewId(), title.trim(), author.trim(), price);
+        Book book = new Book(title.trim(), author.trim(), price);
 
         return bookRepo.saveBook(book);
     }

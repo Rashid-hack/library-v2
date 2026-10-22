@@ -4,10 +4,9 @@ import com.example.library.model.Book;
 
 import java.util.*;
 
-public class InMemoryBookRepository implements BookRepository{
+public class InMemoryBookRepository implements BookRepository {
 
-    private long newId;
-
+    private long lastId;
     private final Map<Long, Book> bookMap = new LinkedHashMap<>();
 
     @Override
@@ -17,8 +16,13 @@ public class InMemoryBookRepository implements BookRepository{
 
     @Override
     public Book saveBook(Book book) {
-        if (book == null){
+        if (book == null) {
             throw new IllegalArgumentException("Melumatlar tam daxil edilmeyib");
+        }
+        if (book.getId() == 0) {
+            Book withId = new Book(++lastId, book.getTitle(), book.getAuthor(), book.getPrice());
+            bookMap.put(withId.getId(), withId);
+            return withId;
         }
         bookMap.put(book.getId(), book);
         return book;
@@ -33,10 +37,5 @@ public class InMemoryBookRepository implements BookRepository{
     public boolean deleteById(long id) {
         Book removed = bookMap.remove(id);
         return removed != null;
-    }
-
-    @Override
-    public long giveNewId() {
-        return ++newId;
     }
 }
