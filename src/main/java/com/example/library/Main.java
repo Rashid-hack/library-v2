@@ -3,6 +3,7 @@ package com.example.library;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
 import com.example.library.repository.InMemoryBookRepository;
+import com.example.library.repository.JooqBookRepository;
 import com.example.library.service.BookService;
 import java.util.List;
 import java.util.Scanner;
@@ -13,7 +14,14 @@ public class Main {
 
     public static void main(String[] args) {
 
-        BookRepository bookRepository = new InMemoryBookRepository();
+        System.setProperty("org.jooq.no-logo", "true");
+        System.setProperty("org.jooq.no-tips", "true");
+
+        BookRepository bookRepository = new JooqBookRepository(
+                "jdbc:postgresql://localhost:5432/library_v2",
+                "postgres",
+                "Re10sh20id93"
+        );
         BookService service = new BookService(bookRepository);
 
         boolean running = true;
