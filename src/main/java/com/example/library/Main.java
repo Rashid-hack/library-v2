@@ -2,9 +2,9 @@ package com.example.library;
 
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
-import com.example.library.repository.InMemoryBookRepository;
 import com.example.library.repository.JooqBookRepository;
 import com.example.library.service.BookService;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,11 +17,19 @@ public class Main {
         System.setProperty("org.jooq.no-logo", "true");
         System.setProperty("org.jooq.no-tips", "true");
 
+        String password = System.getenv("DB_PASSWORD");
+        if (password == null){
+            System.out.println("DB_PASSWORD muhit deyiseni teyin olunmayib!");
+            return;
+        }
+
+
         BookRepository bookRepository = new JooqBookRepository(
                 "jdbc:postgresql://localhost:5432/library_v2",
                 "postgres",
-                "Re10sh20id93"
+                password
         );
+
         BookService service = new BookService(bookRepository);
 
         boolean running = true;
